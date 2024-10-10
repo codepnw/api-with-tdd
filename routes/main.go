@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"net/http"
+	"api-with-tdd/handler"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -13,12 +13,13 @@ var (
 
 func InitRoutes(db *gorm.DB) *gin.Engine {
 	app = gin.Default()
+	handler := handler.NewHandler(db)
 
-	app.GET("/healthcheck", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "OK",
-		})
-	})
+	app.GET("/healthcheck", handler.HealthCheck)
+
+	app.POST("/tasks", handler.CreateTask)
+	app.GET("/tasks", handler.GetTasks)
+	app.DELETE("/tasks/:id", handler.DeleteTask)
 
 	return app
 }
